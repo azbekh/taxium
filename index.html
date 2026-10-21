@@ -1,209 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Taxium Store</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-color: #1c1c1e;
-            --subtext-color: #8e8e93;
-            --primary-color: #007aff;
-            --star-color: #f5a623;
-            --border-radius: 16px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding-bottom: 80px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            background: #ffffff;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .logo-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .user-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-        }
-
-        .avatar {
-            width: 48px; height: 48px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 20px; font-weight: bold;
-        }
-
-        .tab-content { display: none; padding: 0 16px; }
-        .tab-content.active { display: block; }
-
-        .section-title { font-size: 18px; font-weight: 700; margin: 16px 0 12px 0; }
-
-        .input-group {
-            background: #fff;
-            padding: 12px;
-            border-radius: var(--border-radius);
-            margin-bottom: 16px;
-        }
-
-        .input-group label {
-            font-size: 13px; font-weight: 600;
-            color: var(--subtext-color); display: block; margin-bottom: 6px;
-        }
-
-        .input-group input {
-            width: 100%; padding: 10px;
-            border: 1px solid #e5e7eb; border-radius: 10px;
-            font-size: 15px; outline: none;
-        }
-
-        .package-item {
-            background: var(--card-bg);
-            border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 14px;
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 8px; cursor: pointer;
-        }
-
-        .package-item.selected {
-            border-color: var(--primary-color);
-            background: #f0f9ff;
-        }
-
-        .btn-submit {
-            width: 100%; background: var(--primary-color);
-            color: white; border: none; padding: 16px;
-            border-radius: 14px; font-size: 16px; font-weight: 700;
-            margin-top: 16px; cursor: pointer;
-        }
-
-        .navbar {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            height: 65px; background: #ffffff;
-            display: flex; justify-content: space-around; align-items: center;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center;
-            gap: 4px; color: var(--subtext-color); font-size: 11px; cursor: pointer;
-        }
-
-        .nav-item.active { color: var(--primary-color); font-weight: 600; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stars</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root { --bg: var(--tg-theme-bg-color,#fff); --fg: var(--tg-theme-text-color,#111); --card: var(--tg-theme-secondary-bg-color,#f4f4f6); --btn: var(--tg-theme-button-color,#2f80ed); --btnfg: var(--tg-theme-button-text-color,#fff); }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:16px; font-family: system-ui, sans-serif; background:var(--bg); color:var(--fg); }
+  h1 { font-size:22px; margin:0 0 8px; }
+  .bal { background:var(--card); border-radius:14px; padding:12px 14px; margin:12px 0; display:flex; justify-content:space-between; }
+  input { width:100%; padding:12px; border-radius:12px; border:1px solid #ccc; font-size:16px; background:var(--card); color:var(--fg); margin-bottom:12px; }
+  .pk { display:flex; justify-content:space-between; padding:14px; margin-bottom:8px; background:var(--card); border-radius:12px; border:2px solid transparent; cursor:pointer; }
+  .pk.sel { border-color:var(--btn); }
+  button { width:100%; padding:14px; border:0; border-radius:12px; background:var(--btn); color:var(--btnfg); font-size:16px; font-weight:600; margin-top:8px; }
+  button:disabled { opacity:.5; }
+</style>
 </head>
 <body>
+<h1>⭐ Telegram Stars</h1>
+<div class="bal"><span>Balans</span><b id="bal"></b></div>
+<input id="rec" placeholder="@username (qabul qiluvchi)">
+<div id="pks"></div>
+<input id="custom" type="number" inputmode="numeric" placeholder="Yoki miqdorni kiriting (50–10000)">
+<button id="buy" disabled>Xarid qilish</button>
+<script>
+const tg = Telegram.WebApp; tg.ready(); tg.expand();
+const q = new URLSearchParams(location.search);
+const bal = +q.get("bal") || 0, price = +q.get("price") || 260;
+const PACKS = [50, 100, 300, 500, 1000];
+let stars = 0;
+const $ = id => document.getElementById(id);
+const fmt = n => n.toLocaleString("ru-RU") + " so'm";
 
-    <div class="header">
-        <div class="logo-title">
-            <i class="fa-solid fa-star" style="color: #f5a623;"></i>
-            <span>Taxium Store</span>
-        </div>
-    </div>
+$("bal").textContent = fmt(bal);
+if (q.get("u")) $("rec").value = "@" + q.get("u");
+$("pks").innerHTML = PACKS.map(p => `<div class="pk" data-p="${p}"><span>⭐ ${p}</span><b>${fmt(p*price)}</b></div>`).join("");
 
-    <div class="user-card">
-        <div class="avatar" id="u-avatar">U</div>
-        <div>
-            <h3 id="u-name" style="font-size:16px;">Foydalanuvchi</h3>
-            <p id="u-username" style="font-size:13px; color:#8e8e93;">@username</p>
-        </div>
-    </div>
-
-    <div id="tab-stars" class="tab-content active">
-        <div class="section-title">⭐ Stars Sotib Olish</div>
-        
-        <div class="input-group">
-            <label>Oluvchi Telegram Usernami</label>
-            <input type="text" id="stars-target-user" placeholder="@username kiritasiz">
-        </div>
-
-        <div id="stars-packages">
-            <div class="package-item selected" onclick="selectStarPackage(this, 50, 12500)">
-                <div><i class="fa-solid fa-star" style="color:#f5a623"></i> <b>50 Stars</b></div>
-                <div style="color:#007aff; font-weight:700;">12 500 UZS</div>
-            </div>
-            <div class="package-item" onclick="selectStarPackage(this, 100, 24900)">
-                <div><i class="fa-solid fa-star" style="color:#f5a623"></i> <b>100 Stars</b></div>
-                <div style="color:#007aff; font-weight:700;">24 900 UZS</div>
-            </div>
-            <div class="package-item" onclick="selectStarPackage(this, 250, 61000)">
-                <div><i class="fa-solid fa-star" style="color:#f5a623"></i> <b>250 Stars</b></div>
-                <div style="color:#007aff; font-weight:700;">61 000 UZS</div>
-            </div>
-            <div class="package-item" onclick="selectStarPackage(this, 500, 120000)">
-                <div><i class="fa-solid fa-star" style="color:#f5a623"></i> <b>500 Stars</b></div>
-                <div style="color:#007aff; font-weight:700;">120 000 UZS</div>
-            </div>
-        </div>
-
-        <button class="btn-submit" onclick="submitOrder('Stars')">Buyurtma berish</button>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        let selectedStarAmount = 50;
-        let selectedStarPrice = 12500;
-
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const user = tg.initDataUnsafe.user;
-            document.getElementById('u-name').innerText = user.first_name;
-            document.getElementById('u-username').innerText = user.username ? "@" + user.username : "ID: " + user.id;
-            document.getElementById('u-avatar').innerText = user.first_name.charAt(0);
-            document.getElementById('stars-target-user').value = user.username ? "@" + user.username : "";
-        }
-
-        function selectStarPackage(el, amount, price) {
-            document.querySelectorAll('.package-item').forEach(pi => pi.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedStarAmount = amount;
-            selectedStarPrice = price;
-        }
-
-        function submitOrder(type) {
-            const targetUser = document.getElementById('stars-target-user').value;
-            if(!targetUser) {
-                tg.showAlert("Iltimos, oluvchi usernameni kiriting!");
-                return;
-            }
-            const orderData = {
-                type: type,
-                amount: selectedStarAmount,
-                price: selectedStarPrice,
-                target: targetUser
-            };
-            tg.sendData(JSON.stringify(orderData));
-        }
-    </script>
+function refresh() {
+  $("buy").disabled = !(stars >= 50 && stars <= 10000);
+  $("buy").textContent = stars ? `Xarid qilish · ${fmt(stars*price)}` : "Xarid qilish";
+}
+document.querySelectorAll(".pk").forEach(el => el.onclick = () => {
+  stars = +el.dataset.p; $("custom").value = "";
+  document.querySelectorAll(".pk").forEach(x => x.classList.toggle("sel", x === el));
+  refresh();
+});
+$("custom").oninput = e => {
+  stars = +e.target.value || 0;
+  document.querySelectorAll(".pk").forEach(x => x.classList.remove("sel"));
+  refresh();
+};
+$("buy").onclick = () => {
+  const recipient = $("rec").value.trim();
+  if (!/^@?[A-Za-z0-9_]{5,32}$/.test(recipient)) return tg.showAlert("Username noto'g'ri");
+  tg.sendData(JSON.stringify({ recipient, stars }));  // botga yuboradi va oynani yopadi
+};
+refresh();
+</script>
 </body>
 </html>
