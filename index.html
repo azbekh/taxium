@@ -2,49 +2,442 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>StarsOl Demo</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- FontAwesome Ikonkalar -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body{
-            margin:0;
-            font-family:Arial,sans-serif;
-            background:linear-gradient(135deg,#111,#222);
-            color:white;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            height:100vh;
-            text-align:center;
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #1c1c1e;
+            --subtext-color: #8e8e93;
+            --primary-color: #2abee8;
+            --accent-color: #f5a623;
+            --border-radius: 16px;
         }
-        .box{
-            padding:40px;
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        h1{
-            font-size:60px;
-            margin:0;
-            color:#ffd700;
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 90px;
         }
-        p{
-            font-size:20px;
-            opacity:0.8;
+
+        /* Top Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .btn{
-            display:inline-block;
-            margin-top:20px;
-            padding:12px 25px;
-            background:#ffd700;
-            color:black;
-            text-decoration:none;
-            border-radius:8px;
-            font-weight:bold;
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .logo-title i {
+            color: #5856d6;
+        }
+
+        .balance-badge {
+            background: #eef9f5;
+            color: #10b981;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* User Profile Info */
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .user-details h3 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .user-details p {
+            font-size: 13px;
+            color: var(--subtext-color);
+        }
+
+        /* Page Tab Navigation */
+        .tab-content {
+            display: none;
+            padding: 0 16px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Services Cards */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 16px 0 12px 0;
+        }
+
+        .service-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: transform 0.1s;
+        }
+
+        .service-card:active {
+            transform: scale(0.98);
+        }
+
+        .service-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .service-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .icon-stars { background: #fff8e7; color: #f5a623; }
+        .icon-premium { background: #f3e8ff; color: #a855f7; }
+
+        .service-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .service-info p {
+            font-size: 12px;
+            color: var(--subtext-color);
+        }
+
+        /* Packages Grid / List */
+        .input-group {
+            background: #fff;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--subtext-color);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .package-item {
+            background: var(--card-bg);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .package-item.selected {
+            border-color: var(--primary-color);
+            background: #f0f9ff;
+        }
+
+        .package-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .package-price {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Order Button */
+        .btn-submit {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+
+        /* Bottom Navigation Bar */
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #e5e7eb;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--subtext-color);
+            font-size: 11px;
+            text-decoration: none;
+            cursor: pointer;
+            width: 20%;
+        }
+
+        .nav-item i {
+            font-size: 18px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>TAXIUM</h1>
-        <p>Taxi agregator loyihasi "Itdan Tez" 🚕</p>
-        <a href="#" class="btn">Tez kunda</a>
+
+    <!-- Upper Bar -->
+    <div class="header">
+        <div class="logo-title">
+            <i class="fa-solid fa-star-of-david"></i>
+            <span>StarsOl</span>
+        </div>
+        <div class="balance-badge">
+            <i class="fa-solid fa-wallet"></i> 0 so'm
+        </div>
     </div>
+
+    <!-- User Header -->
+    <div class="user-card">
+        <div class="avatar" id="u-avatar">U</div>
+        <div class="user-details">
+            <h3 id="u-name">Foydalanuvchi</h3>
+            <p id="u-username">@username</p>
+        </div>
+    </div>
+
+    <!-- TAB 1: ASOSIY (XIZMATLAR) -->
+    <div id="tab-home" class="tab-content active">
+        <div class="section-title">Telegram xizmatlari</div>
+        
+        <div class="service-card" onclick="openStarsBuy()">
+            <div class="service-left">
+                <div class="service-icon icon-stars"><i class="fa-solid fa-star"></i></div>
+                <div class="service-info">
+                    <h4>Stars sotib oling</h4>
+                    <p>Telegram Stars balansingizni to'ldiring</p>
+                </div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: #ccc;"></i>
+        </div>
+
+        <div class="service-card" onclick="openPremiumBuy()">
+            <div class="service-left">
+                <div class="service-icon icon-premium"><i class="fa-solid fa-bolt"></i></div>
+                <div class="service-info">
+                    <h4>Premium obuna</h4>
+                    <p>Eksklyuziv imkoniyatlarni oching</p>
+                </div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: #ccc;"></i>
+        </div>
+    </div>
+
+    <!-- TAB 2: STARS SOTIB OLISH SAHIFASI -->
+    <div id="tab-stars" class="tab-content">
+        <div class="section-title">⭐ Stars Xarid Qilish</div>
+        
+        <div class="input-group">
+            <label>Oluvchi Telegram Usernami</label>
+            <input type="text" id="stars-target-user" placeholder="@username kiritasiz">
+        </div>
+
+        <div class="section-title" style="font-size: 15px;">Paketni tanlang</div>
+        <div id="stars-packages">
+            <div class="package-item selected" onclick="selectStarPackage(this, 50, 12500)">
+                <div class="package-left"><i class="fa-solid fa-star" style="color:#f5a623"></i> 50 Stars</div>
+                <div class="package-price">12 500 UZS</div>
+            </div>
+            <div class="package-item" onclick="selectStarPackage(this, 100, 24900)">
+                <div class="package-left"><i class="fa-solid fa-star" style="color:#f5a623"></i> 100 Stars</div>
+                <div class="package-price">24 900 UZS</div>
+            </div>
+            <div class="package-item" onclick="selectStarPackage(this, 250, 61000)">
+                <div class="package-left"><i class="fa-solid fa-star" style="color:#f5a623"></i> 250 Stars</div>
+                <div class="package-price">61 000 UZS</div>
+            </div>
+            <div class="package-item" onclick="selectStarPackage(this, 500, 120000)">
+                <div class="package-left"><i class="fa-solid fa-star" style="color:#f5a623"></i> 500 Stars</div>
+                <div class="package-price">120 000 UZS</div>
+            </div>
+        </div>
+
+        <button class="btn-submit" onclick="submitOrder('Stars')">Xarid qilishni tasdiqlash</button>
+    </div>
+
+    <!-- TAB 3: PROFIL / YORDAM -->
+    <div id="tab-profile" class="tab-content">
+        <div class="section-title">Profil & Sozlamalar</div>
+        <div class="service-card">
+            <div class="service-left">
+                <i class="fa-solid fa-headset" style="font-size:20px; color:#10b981;"></i>
+                <div class="service-info">
+                    <h4>Qo'llab-quvvatlash</h4>
+                    <p>Admin bilan bog'lanish</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pastki Navigatsiya -->
+    <div class="navbar">
+        <div class="nav-item active" onclick="switchTab('home', this)">
+            <i class="fa-solid fa-house"></i>
+            <span>Asosiy</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('stars', this)">
+            <i class="fa-solid fa-star"></i>
+            <span>Do'kon</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('profile', this)">
+            <i class="fa-solid fa-user"></i>
+            <span>Profil</span>
+        </div>
+    </div>
+
+    <script>
+        // Telegram WebApp obyektini tashabbus qilish
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Ekranni to'liq yoyish
+
+        // Telegram user ma'lumotlarini o'qish
+        let selectedStarAmount = 50;
+        let selectedStarPrice = 12500;
+
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            document.getElementById('u-name').innerText = user.first_name + (user.last_value ? " " + user.last_name : "");
+            document.getElementById('u-username').innerText = user.username ? "@" + user.username : "ID: " + user.id;
+            document.getElementById('u-avatar').innerText = user.first_name.charAt(0);
+            document.getElementById('stars-target-user').value = user.username ? "@" + user.username : "";
+        }
+
+        // Tablarni almashtirish
+        function switchTab(tabName, el) {
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
+
+            document.getElementById('tab-' + tabName).classList.add('active');
+            if(el) el.classList.add('active');
+        }
+
+        function openStarsBuy() {
+            switchTab('stars', document.querySelectorAll('.nav-item')[1]);
+        }
+
+        function openPremiumBuy() {
+            tg.showAlert("Premium xizmati hozircha demo rejimida!");
+        }
+
+        // Paket tanlash
+        function selectStarPackage(el, amount, price) {
+            document.querySelectorAll('.package-item').forEach(pi => pi.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedStarAmount = amount;
+            selectedStarPrice = price;
+        }
+
+        // Buyurtma yuborish (Telegram botga)
+        function submitOrder(type) {
+            const targetUser = document.getElementById('stars-target-user').value;
+
+            if(!targetUser) {
+                tg.showAlert("Iltimos, oluvchi usernameni kiriting!");
+                return;
+            }
+
+            const orderData = {
+                type: type,
+                amount: selectedStarAmount,
+                price: selectedStarPrice,
+                target: targetUser
+            };
+
+            // Telegram botga ma'lumotni JSON ko'rinishida qaytarish
+            tg.sendData(JSON.stringify(orderData));
+        }
+    </script>
 </body>
 </html>
